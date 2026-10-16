@@ -1,0 +1,10 @@
+{
+  "name": "Atlas — No Man's Sky",
+  "short_name": "Atlas NMS",
+  "description": "Centro de control para tu universo de No Man's Sky",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0b1220",
+  "theme_color": "#0b1220",
+  "icons": []
+}
