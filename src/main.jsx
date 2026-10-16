@@ -25,8 +25,8 @@ const modules = [
   { id:'ships', label:'Naves', singular:'Nave', icon:Rocket, color:'orange', fields:[['type','Tipo de nave'],['class','Clase'],['status','Estado'],['sold_at','Fecha de venta'],['slots','Espacios / rango'],['weapon','Arma / módulo principal'],['design','Color / diseño'],['system_id','Sistema de origen'],['notes','Notas']] },
   { id:'exocraft', label:'Exonaves', singular:'Exonave', icon:Rocket, color:'orange', fields:[['type','Tipo de exonave'],['planet_id','Planeta o luna'],['notes','Notas']] },
   { id:'crew', label:'Tripulación del carguero', singular:'Tripulante', icon:Users, color:'cyan', fields:[['freighter_id','Carguero asociado'],['type','Tipo de tripulante'],['status','Disponibilidad'],['species','Especie / raza'],['role','Rol / especialidad'],['rank','Rango / nivel'],['notes','Notas']] },
-  { id:'flora', label:'Flora', singular:'Descubrimiento de flora', icon:Leaf, color:'green', fields:[['planet_id','Planeta o luna'],['system_id','Sistema estelar'],['biome','Bioma'],['kind','Tipo de flora'],['resource','Recurso obtenido'],['yield','Rendimiento'],['coordinates','Ubicación / coordenadas'],['catalogued','Catalogada'],['notes','Notas']] },
-  { id:'fauna', label:'Fauna', singular:'Descubrimiento de fauna', icon:PawPrint, color:'orange', fields:[['planet_id','Planeta o luna'],['system_id','Sistema estelar'],['biome','Bioma'],['diet','Dieta'],['behavior','Comportamiento'],['habitat','Hábitat / zona'],['rarity','Rareza'],['reward','Recurso / recompensa'],['catalogued','Catalogada'],['notes','Notas']] },
+  { id:'flora', label:'Flora', singular:'Descubrimiento de flora', icon:Leaf, color:'green', fields:[['planet_id','Planeta o luna'],['system_id','Sistema estelar'],['age','Edad'],['root_structure','Estructura radical'],['nutrition_source','Fuente de nutrición'],['notes','Notas']] },
+  { id:'fauna', label:'Fauna', singular:'Descubrimiento de fauna', icon:PawPrint, color:'orange', fields:[['planet_id','Planeta o luna'],['system_id','Sistema estelar'],['genus','Género'],['weight','Peso'],['height','Altura'],['observations','Observaciones adicionales']] },
   { id:'inventory', label:'Inventario', singular:'Artículo de inventario', icon:Boxes, color:'yellow', fields:[['resource_id','Recurso'],['category','Categoría'],['variant','Tipo / variante'],['quantity','Cantidad actual'],['unit','Unidad / pila'],['location','Ubicación'],['target','Cantidad objetivo'],['notes','Notas']] },
   { id:'resources', label:'Recursos', singular:'Recurso', icon:Archive, color:'green', fields:[['characteristics','Características / recursos presentes'],['category','Categoría'],['description','Descripción'],['image_url','URL de imagen'],['available','Cantidad disponible (opcional)'],['needed','Cantidad necesaria (opcional)'],['planet_id','Planeta recomendado'],['system_id','Sistema estelar'],['method','Método de obtención'],['notes','Notas']] },
   { id:'guide', label:'Guía y objetivos', singular:'Objetivo', icon:BookOpen, color:'purple', fields:[['category','Categoría'],['description','Descripción / pasos'],['related','Relacionado con'],['priority','Prioridad'],['status','Estado'],['requirements','Requisitos'],['reward','Recompensa'],['link','Enlace / referencia'],['notes','Notas']] },
@@ -92,6 +92,8 @@ function App() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [authMessage, setAuthMessage] = useState('');
+  const [authBusy, setAuthBusy] = useState(false);
+  const [signupNotice, setSignupNotice] = useState(false);
   const [active, setActive] = useState('overview');
   const [records, setRecords] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -132,10 +134,17 @@ function App() {
   async function authenticate(e) {
     e.preventDefault(); setAuthMessage('');
     if (!supabase) return;
-    const fn = authMode === 'login' ? supabase.auth.signInWithPassword({email,password}) : supabase.auth.signUp({email,password});
-    const {error} = await fn;
-    if (error) setAuthMessage(error.message);
-    else if (authMode === 'signup') setAuthMessage('Cuenta creada. Si se solicita, confirma tu correo y después inicia sesión.');
+    setAuthBusy(true);
+    try {
+      if (authMode === 'login') {
+        const {error} = await supabase.auth.signInWithPassword({email,password});
+        if (error) setAuthMessage(error.message);
+      } else {
+        const {error} = await supabase.auth.signUp({email,password,options:{emailRedirectTo:`${window.location.origin}/`}});
+        if (error) setAuthMessage(error.message);
+        else setSignupNotice(true);
+      }
+    } finally { setAuthBusy(false); }
   }
   async function logout() { await supabase?.auth.signOut(); setSession(null); setRecords([]); }
 
@@ -242,7 +251,7 @@ function App() {
         <small className="field-help">Solo aparecen fragatas disponibles, no asignadas a otra expedición en curso. Añade entre 1 y 5 fragatas.</small>
       </div>;
     }
-    const isLong = ['notes','description','requirements','stats','materials','resources','upgrades','parts','rewards','route','coordinates','portal','effect','traits','weapons','tech','source','purpose','link','design'].includes(key);
+    const isLong = ['observations','root_structure','nutrition_source','notes','description','requirements','stats','materials','resources','upgrades','parts','rewards','route','coordinates','portal','effect','traits','weapons','tech','source','purpose','link','design'].includes(key);
     const isRequiredImage = module.id === 'resources' && key === 'image_url';
     if (relationCategory) {
       const optionsList = recordsForRelation(relationCategory);
@@ -257,6 +266,7 @@ function App() {
       return <><input list="atlas-galaxies" value={value} onChange={e=>setField(key,e.target.value)} placeholder="Escribe una galaxia; se guardará para reutilizarla"/><datalist id="atlas-galaxies">{galaxies.map(g=><option key={g} value={g}/>)}</datalist></>;
     }
     if (module.id === 'resources' && key === 'image_url') return <input type="url" required value={value} onChange={e=>setField(key,e.target.value)} placeholder="https://… (imagen obligatoria)" />;
+    if ((module.id === 'fauna' && ['weight','height'].includes(key)) || (module.id === 'flora' && key === 'age')) return <input type={module.id === 'flora' ? 'text' : 'number'} min={module.id === 'fauna' ? '0' : undefined} value={value} onChange={e=>setField(key,e.target.value)} placeholder={module.id === 'flora' ? 'Ej. 120 años' : '0'} />;
     if (key === 'quantity' || key === 'available' || key === 'needed' || key === 'target' || key === 'population' || (key === 'duration' && module.id !== 'expeditions') || key === 'fuel_required' || ['command_rooms','containers','happiness','productivity','maintenance','combat_level','exploration_level','industrial_level','trade_level','expeditions_count','times_damaged','fuel_tons','fuel_distance','rank_progress'].includes(key)) return <input type="number" min="0" max={['happiness','rank_progress'].includes(key)?100:undefined} value={value} onChange={e=>setField(key,e.target.value)} placeholder="0" />;
     if (module.id === 'expeditions' && key === 'duration') return <input type="text" inputMode="numeric" value={value} onChange={e=>setField(key,e.target.value)} placeholder="HH:MM:SS (ej. 04:30:00)" pattern="^[0-9]{1,4}:[0-5][0-9]:[0-5][0-9]$" title="Introduce el tiempo como HH:MM:SS, por ejemplo 04:30:00" />;
     if (key === 'departure') return <input type="datetime-local" value={value} onChange={e=>setField(key,e.target.value)} />;
@@ -382,7 +392,7 @@ function App() {
 
   if (authLoading) return <div className="loading-screen"><div className="brand-mark"><Sparkles/></div><span>Preparando tu universo…</span></div>;
   if (!supabase) return <SetupScreen />;
-  if (!session) return <div className="auth-page"><div className="auth-art"><div className="stars"></div><div className="auth-brand"><div className="brand-mark"><Sparkles/></div><span>ATLAS <i>· NMS</i></span></div><div className="auth-copy"><div className="eyebrow"><span className="pulse"></span> TU UNIVERSO, BAJO CONTROL</div><h1>El espacio es inmenso.<br/><em>Tu registro, infinito.</em></h1><p>Un lugar para cada sistema descubierto, cada criatura catalogada y cada aventura que no quieres olvidar.</p><div className="auth-stats"><span><Globe2/> Exploración</span><span><Rocket/> Tu flota</span><span><Leaf/> Descubrimientos</span></div></div><div className="auth-footer">UNA BITÁCORA PERSONAL PARA NO MAN'S SKY</div></div><div className="auth-form-wrap"><form className="auth-card" onSubmit={authenticate}><div className="mobile-brand"><div className="brand-mark"><Sparkles/></div><b>ATLAS · NMS</b></div><div className="eyebrow">BIENVENIDO A BORDO</div><h2>{authMode==='login'?'Continúa tu viaje':'Crea tu cuenta'}</h2><p className="muted">{authMode==='login'?'Entra para acceder a tu universo sincronizado.':'Tu bitácora estará disponible desde todos tus dispositivos.'}</p><label>Correo electrónico<input type="email" required autoComplete="email" value={email} onChange={e=>setEmail(e.target.value)} placeholder="tu@correo.com"/></label><label>Contraseña<input type="password" required minLength="6" autoComplete={authMode==='login'?'current-password':'new-password'} value={password} onChange={e=>setPassword(e.target.value)} placeholder="Mínimo 6 caracteres"/></label>{authMessage && <div className="auth-message">{authMessage}</div>}<button className="primary full" type="submit">{authMode==='login'?'Iniciar sesión':'Crear cuenta'} <span>→</span></button><div className="auth-switch">{authMode==='login'?'¿Aún no tienes cuenta?':'¿Ya tienes una cuenta?'} <button type="button" onClick={()=>{setAuthMode(authMode==='login'?'signup':'login');setAuthMessage('')}}>{authMode==='login'?'Regístrate':'Inicia sesión'}</button></div><div className="privacy-note"><ShieldCheck size={15}/> Tus registros están separados por cuenta.</div></form></div></div>;
+  if (!session) return <div className="auth-page"><div className="auth-art"><div className="stars"></div><div className="auth-brand"><div className="brand-mark"><Sparkles/></div><span>ATLAS <i>· NMS</i></span></div><div className="auth-copy"><div className="eyebrow"><span className="pulse"></span> TU UNIVERSO, BAJO CONTROL</div><h1>El espacio es inmenso.<br/><em>Tu registro, infinito.</em></h1><p>Un lugar para cada sistema descubierto, cada criatura catalogada y cada aventura que no quieres olvidar.</p><div className="auth-stats"><span><Globe2/> Exploración</span><span><Rocket/> Tu flota</span><span><Leaf/> Descubrimientos</span></div></div><div className="auth-footer">UNA BITÁCORA PERSONAL PARA NO MAN'S SKY</div></div><div className="auth-form-wrap"><form className="auth-card" onSubmit={authenticate}><div className="mobile-brand"><div className="brand-mark"><Sparkles/></div><b>ATLAS · NMS</b></div><div className="eyebrow">BIENVENIDO A BORDO</div><h2>{authMode==='login'?'Continúa tu viaje':'Crea tu cuenta'}</h2><p className="muted">{authMode==='login'?'Entra para acceder a tu universo sincronizado.':'Tu bitácora estará disponible desde todos tus dispositivos.'}</p><label>Correo electrónico<input type="email" required autoComplete="email" value={email} onChange={e=>setEmail(e.target.value)} placeholder="tu@correo.com"/></label><label>Contraseña<input type="password" required minLength="6" autoComplete={authMode==='login'?'current-password':'new-password'} value={password} onChange={e=>setPassword(e.target.value)} placeholder="Mínimo 6 caracteres"/></label>{authMessage && <div className="auth-message">{authMessage}</div>}<button className="primary full" type="submit" disabled={authBusy}>{authBusy ? <><span className="button-spinner"/> {authMode==='login'?'Iniciando sesión…':'Creando cuenta…'}</> : <>{authMode==='login'?'Iniciar sesión':'Crear cuenta'} <span>→</span></>}</button><div className="auth-switch">{authMode==='login'?'¿Aún no tienes cuenta?':'¿Ya tienes una cuenta?'} <button type="button" onClick={()=>{setAuthMode(authMode==='login'?'signup':'login');setAuthMessage('')}}>{authMode==='login'?'Regístrate':'Inicia sesión'}</button></div><div className="privacy-note"><ShieldCheck size={15}/> Tus registros están separados por cuenta.</div></form></div>{authBusy && <div className="auth-busy-overlay" aria-live="polite"><div className="auth-busy-card"><div className="brand-mark"><Sparkles/></div><div className="loading-ring"/><h2>{authMode==='login'?'Abriendo tu universo…':'Preparando tu cuenta…'}</h2><p>{authMode==='login'?'Estamos verificando tus credenciales.':'Estamos registrando tus datos.'}</p></div></div>}{signupNotice && <div className="signup-notice-overlay" role="dialog" aria-modal="true"><div className="signup-notice-card"><div className="signup-notice-icon"><ShieldCheck size={26}/></div><h2>Confirma tu correo</h2><p>Hemos enviado un enlace de confirmación a <strong>{email}</strong>. Revisa tu bandeja de entrada y, si no aparece, comprueba la carpeta de spam.</p><p>Al abrir el enlace volverás a Atlas. Después podrás iniciar sesión con tu correo y contraseña.</p><button className="primary full" onClick={()=>{setSignupNotice(false);setAuthMode('login');setAuthMessage('Revisa tu correo y confirma la cuenta antes de iniciar sesión.')}}>Entendido</button></div></div>}</div>;
 
   const totalSystems = counts.systems || 0;
   const totalPlanets = counts.planets || 0;
