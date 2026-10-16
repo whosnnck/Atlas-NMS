@@ -202,3 +202,17 @@ body, .app-shell, .sidebar, .detail-scroll, .form-scroll { scrollbar-color: #315
 .auth-busy-card .loading-ring { width:32px; height:32px; border-width:3px; }
 .auth-busy-card h2 { margin:4px 0 0; font:700 21px Manrope,sans-serif; }
 .auth-busy-card p { margin:0; color:#91a6bb; font-size:12px; }
+
+/* Agrupación de planetas y lunas por sistema estelar */
+.planet-system-toolbar{display:flex;align-items:center;gap:18px;margin:4px 0 22px;flex-wrap:wrap}
+.planet-system-toolbar h2{font:700 20px Manrope,sans-serif;margin:5px 0;color:#eaf2fa}
+.planet-system-toolbar p{font-size:11px;color:#91a5ba;margin:0}
+.system-groups-grid{align-items:stretch}
+.system-group-card{min-width:0;display:flex;align-items:center;gap:14px;text-align:left;padding:19px;border:1px solid #293c51;border-radius:11px;background:linear-gradient(145deg,#142337,#101b2a);color:#e5edf6;transition:border-color .18s ease,transform .18s ease,box-shadow .18s ease}
+.system-group-card:hover,.system-group-card:focus-visible{border-color:#56bdb7;transform:translateY(-2px);box-shadow:0 12px 30px #0003;outline:none}
+.system-group-icon{width:44px;height:44px;flex-shrink:0;display:grid;place-items:center;border-radius:12px;background:#173a45;color:#72d9d1}
+.system-group-copy{min-width:0;display:flex;flex-direction:column;gap:5px;flex:1}
+.system-group-copy b{font:650 13px Manrope,sans-serif;overflow-wrap:anywhere}
+.system-group-copy small{font-size:10px;color:#8da2b9}
+.system-group-copy em{font-style:normal;font-size:10px;color:#70d9d1;margin-top:3px}
+.system-group-arrow{font-size:18px;color:#73d9d1;align-self:flex-start}
