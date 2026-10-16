@@ -216,3 +216,40 @@ body, .app-shell, .sidebar, .detail-scroll, .form-scroll { scrollbar-color: #315
 .system-group-copy small{font-size:10px;color:#8da2b9}
 .system-group-copy em{font-style:normal;font-size:10px;color:#70d9d1;margin-top:3px}
 .system-group-arrow{font-size:18px;color:#73d9d1;align-self:flex-start}
+
+/* Notificaciones de Atlas */
+.notification-wrap{position:relative;display:flex;align-items:center}
+.notification-bell{position:relative;width:34px;height:34px;display:grid;place-items:center;background:#132236;border:1px solid #293e54;border-radius:9px;color:#8da5bb;transition:.18s}
+.notification-bell:hover,.notification-bell.has-unread{color:#78e0d7;border-color:#3b777c;background:#17313e}
+.notification-count{position:absolute;top:-6px;right:-6px;min-width:17px;height:17px;padding:0 4px;display:grid;place-items:center;border-radius:99px;background:#e18b42;border:2px solid #0d1726;color:#101722;font:700 9px 'DM Mono',monospace}
+.notification-popover{position:absolute;top:calc(100% + 12px);right:0;width:min(360px,calc(100vw - 28px));max-height:min(470px,75vh);overflow:auto;z-index:60;background:#101d2d;border:1px solid #2d4359;border-radius:12px;box-shadow:0 18px 55px #0008}
+.notification-popover-head{position:sticky;top:0;z-index:1;display:flex;justify-content:space-between;align-items:center;gap:12px;padding:14px 15px;background:#132236;border-bottom:1px solid #283b50}
+.notification-popover-head b,.notification-popover-head small{display:block}.notification-popover-head b{font:650 13px Manrope,sans-serif;color:#e8f2fb}.notification-popover-head small{font-size:10px;color:#8197ad;margin-top:4px}.notification-popover-head button{border:0;background:transparent;color:#72d8d0;font-size:10px;white-space:nowrap}
+.notification-item{display:flex;align-items:flex-start;gap:10px;width:100%;padding:12px 14px;border:0;border-bottom:1px solid #203247;background:transparent;color:inherit;text-align:left}.notification-item:hover{background:#17283c}.notification-item.read{opacity:.62}.notification-item-icon{width:30px;height:30px;flex:0 0 30px;display:grid;place-items:center;border-radius:8px;background:#3d3021;color:#f5b66c}.notification-item-icon.settlement{background:#1b3c3d;color:#7ce0d7}.notification-item>span:nth-child(2){min-width:0;flex:1}.notification-item b,.notification-item small,.notification-item em{display:block}.notification-item b{font-size:11px;line-height:1.45;color:#e1ebf5}.notification-item small{font-size:10px;line-height:1.5;color:#91a5b9;margin-top:4px}.notification-item em{font:9px 'DM Mono',monospace;color:#627c95;margin-top:7px;font-style:normal}.notification-item>i{width:6px;height:6px;flex:0 0 6px;border-radius:50%;background:#6ee0d4;margin-top:5px}.notification-empty{padding:24px 18px;color:#8398ad;font-size:11px;line-height:1.7;text-align:center}
+.settlement-activity-editor{margin:5px 0 18px;padding:14px;border:1px solid #2a4655;border-radius:9px;background:#0e1a29}.settlement-activity-title{display:flex;align-items:center;gap:9px;margin-bottom:13px;color:#72d8d0}.settlement-activity-title b,.settlement-activity-title small{display:block}.settlement-activity-title b{font-size:12px;color:#e3edf6}.settlement-activity-title small{font-size:10px;line-height:1.5;color:#8399ad;margin-top:4px}.settlement-activity-editor .form-grid{gap:0 12px}.settlement-activity-editor label{margin-bottom:12px}.settlement-activity-editor select{background:#0d1827;border:1px solid #2b3d52;border-radius:6px;color:#e4edf6;padding:10px 11px;font-size:11px;width:100%}.settlement-activity-list{border-top:1px solid #293d50;margin-top:8px;padding-top:11px}.settlement-activity-list>b{font-size:10px;color:#8fa7bb}.settlement-activity-list>div,.settlement-events-preview>div{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:9px 0;border-bottom:1px solid #203247}.settlement-activity-list>div:last-child,.settlement-events-preview>div:last-child{border-bottom:0}.settlement-activity-list span,.settlement-events-preview span{min-width:0}.settlement-activity-list strong,.settlement-activity-list small,.settlement-events-preview strong,.settlement-events-preview small{display:block;overflow-wrap:anywhere}.settlement-activity-list strong,.settlement-events-preview strong{font-size:10px;color:#dce8f3}.settlement-activity-list small,.settlement-events-preview small{font-size:9px;color:#8096ab;margin-top:4px}.settlement-activity-list button{width:26px;height:26px;display:grid;place-items:center;background:#2b2029;border:1px solid #55313d;color:#f0a0a8;border-radius:6px;flex-shrink:0}.settlement-events-preview{margin-top:13px;padding:10px 11px;border:1px solid #293d50;border-radius:8px;background:#0d1827}.settlement-events-preview>b{display:block;font-size:10px;color:#91a7bc;margin-bottom:4px}.settlement-events-preview em{font-style:normal;font-size:9px;white-space:nowrap;text-align:right}.settlement-event-done{color:#7bd8ad}.settlement-event-active{color:#ffc477}
+@media(max-width:620px){.notification-popover{position:fixed;top:62px;right:10px;width:calc(100vw - 20px)}.notification-bell{width:31px;height:31px}.settlement-activity-editor{padding:11px}}
+
+
+/* Expediciones canceladas: fondo rojo suave, icono y acentos en rojo */
+.record-card.expedition-cancelled {
+  border-color: #9f4650 !important;
+  background: linear-gradient(145deg, #30202b, #211923) !important;
+  background-image: linear-gradient(135deg, #a9434d20, transparent 70%) !important;
+  box-shadow: inset 0 0 0 1px #a9434d33;
+}
+.record-card.expedition-cancelled .record-icon {
+  color: #ff9da5 !important;
+  background: #542b35 !important;
+  border: 1px solid #87404b;
+}
+.record-card.expedition-cancelled .record-category,
+.record-card.expedition-cancelled .record-card-footer button,
+.record-card.expedition-cancelled .record-details b {
+  color: #f19aa2 !important;
+}
+.record-card.expedition-cancelled .record-details,
+.record-card.expedition-cancelled .record-details > div,
+.record-card.expedition-cancelled .record-card-footer {
+  border-color: #57313b !important;
+}
+.record-card.expedition-cancelled:hover { border-color: #c05c66 !important; }
