@@ -253,3 +253,18 @@ body, .app-shell, .sidebar, .detail-scroll, .form-scroll { scrollbar-color: #315
   border-color: #57313b !important;
 }
 .record-card.expedition-cancelled:hover { border-color: #c05c66 !important; }
+
+
+/* Historial estadístico de misiones por fragata */
+.frigate-mission-chart{margin-top:12px;padding:11px;border:1px solid #26374a;border-radius:8px;background:#0d1827}
+.frigate-mission-chart> b{display:block;margin-bottom:10px;font-size:10px;color:#91a7bc}
+.frigate-mission-chart>small{display:block;color:#748ba2;font-size:9px;line-height:1.5}
+.frigate-chart-content{display:flex;align-items:center;gap:13px}
+.frigate-pie-chart{width:62px;height:62px;flex:0 0 62px;border-radius:50%;border:3px solid #172638;box-shadow:0 0 0 1px #35475b}
+.frigate-chart-legend{display:flex;flex-direction:column;gap:8px;min-width:0;flex:1}
+.frigate-chart-legend span{display:flex;align-items:center;gap:6px;font-size:9px;color:#a9bdce}
+.frigate-chart-legend b{margin-left:auto;color:#e6f0f8;font-size:10px}
+.frigate-chart-legend i{width:7px;height:7px;border-radius:2px;display:inline-block;flex:0 0 7px}
+.mission-legend-success{background:#39b879}.mission-legend-failed{background:#c85b65}
+.settlement-event-active{font-family:'DM Mono',monospace;font-variant-numeric:tabular-nums;color:#ffc477}
+.settlement-event-done{color:#7bd8ad}
